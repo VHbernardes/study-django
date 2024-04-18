@@ -1,11 +1,13 @@
 ## DOCUMENTAÇÃO
 
-1 - Criação de um ambiente virtual venv
-2 - Ativação do ambiente virtual (.\nome_da_venv\Scripts(ou bin)\activate)
-3 - Instalação do Django
-    - pip install Django
-    - django-admin startproject nome_projeto (criação do projeto em django)
-    - python manage.py migrate (criação do banco de dados do django - SQLlite3)
+1 - Criação de um ambiente virtual venv;
+
+2 - Ativação do ambiente virtual (.\nome_da_venv\Scripts(ou bin)\activate);
+
+3 - Instalação do Django;
+    - pip install Django;
+    - django-admin startproject nome_projeto (criação do projeto em django);
+    - python manage.py migrate (criação do banco de dados do django - SQLlite3);
     - python manage.py runserver
 4 - Download do DB Browser for SQLite para a visualização do nosso banco de dados
 5 - Criação do app principal do django
@@ -55,6 +57,47 @@
 34 - Após, criamos um novo path, ou seja, um novo caminho para essa página, adicionando um parâmetro, que no caso é a ID do tópico que você está inserido e onde você quer criar anotações;
 35 - Agora, criamos uma nova view, seguindo a lógica do primeiro formulário, com a diferença que vamos primeiro criar uma váriavel onde ele irá pegar usando o método get um único só tópico com o seu ID, que foi selecionado, para poder criar novas anotações a ele. Outra diferença é na validação do formulário, que quando ele validar e ver que é true, ele irá criar um novo objeto e irá salvar os dados desse formulário nesse objeto, mas não irá gravar-los no banco de dados ainda. Após isso, irá associar esse novo objeto com o tópico escolhido, depois irá salvar o objeto esses novos dados e o tópico escolhido no banco de dados. Por fim, irá redirecionar o usuário com o reverse para a página do tópico após adicionar a anotação com sucesso;
 36 - Criamos de novo um template para essa view, e implementamos a lógica igual algumas outras páginas;
+
+37 - Criamos um novo path para podermos editar as anotações, então criamos um novo path em urls.py, onde colocamos o caminho do navegador como new_edit/<entry_id>, onde esse entry_id será o ID que irá especificar qual anotação estamos editando;
+
+38 - Após, criamos uma nova view, onde implementamos uma nova função new_edit, seguindo a lógica do new_topic, mas com a diferença que antes da verificação do método post, temos um objeto para pegar uma só anotação e outro objeto que receberá a anotação e associará com o tópico dessa anotação;
+
+39 - Agora criamos um novo template seguindo basicamente todos os passos que seguimos com os outros templates;
+
+40 - A diferença dessa implementação é que para ela não precisamos criar um novo forms, já que iremos utilizar o forms das anotações já, onde iremos apenas modifica-la;
+
+41 - Agora vamos fazer nossa página de login, e para isso devemos criar um novo app django, utilizando o manage.py startapp nomeDoApp;
+
+42 - Após isso, devemos ir para pasta da aplicação do projeto, onde está o settings.py, para colocar nosso novo app dentro de 'INSTALLED_APPS', para o django reconhecer nosso novo app;
+
+43 - Vamos na urls.py da aplicação, onde está o caminho da página inicial e da admin, e criamos um novo caminho, com o nome de users/;
+
+44 - Agora, criamos um urls.py dentro da pasta do app users, importamos o django.urls e o django.contrib.auth, onde importaremos as views dessa biblioteca. Ela apresenta métodos prontos para efetuar o login;
+
+45 - Criamos depois uma pasta templates e users dentro do nosso app users, para em si podermos criar a página de login. Para a criação dela, primeiro vamos extender também da base.html do nosso outro app, depois abrir nosso block content para enfim começar a implementa-la. Após isso, começamos com a lógica dos outros templates, com a diferença de incluimos um imput do tipo hidden, que irá nos redirecionar para a página inicial caso o login seja concluido corretamente;
+
+46 - Agora precisamos fazer o logout do usuário, para isso vamos criar um novo caminho em urls.py, dentro do app users. Depois, iremos criar uma view utilizando o método logout do django, que além de ser simples na implementação, irá deixar mais simples nosso projeto. Para finalizar nosso logout, implementamos ele na base.html, que fica no nosso outro app, onde colocamos dentro do if que autentica o usuário, então quando ele for autenticado, agora conseguirá quebrar a sessão e deslogar;
+
+47 - Agora vamos criar um registrador de usuários, para novos usuários puderem se cadastrar no site. Para isso, vamos criar um novo caminho na urls.py do app users. Após, vamos criar sua view, onde vamos utilizar novos métodos do django, o UserCreationForm, o login e o authenticate, e vamos utilizar a lógica das views antigas relacionadas com os formulários;
+    - Outra diferença perceptível no código é quando vamos usar o authenticate, que para isso, criamos uma nova variável chamada new_user, que irá armazenar o formulário no banco de dados depois de validado;
+
+48 - Criamos o register.html nos templates do app users, copiamos a página de login pois ela apresenta a mesma lógica que iremos utilizar, trocamos apenas a primeira url para poder voltar o cadastro e as strings;
+
+49 - Por fim, criamos uma referência dela dentro da base.html, dentro do else do login caso não consiga logar, assim ele conseguirá se cadastrar;
+
+50 - Agora vamos restringir funções para os usuários que estam logados. Primeiro temos que visualizar e teorizar o que queremos e não queremos restringir, e após isso, vamos na views onde está as funcionalidades que queremos restringir. Agora iremos importar o método login_required, que vai de uma forma simples restringir o que queremos, apenas adicionando no código o @login_required. OBS.: O LOGIN REQUIRED TEM DE SER COLOCADO ANTES DAS FUNCIONALIDADES QUE QUEREMOS RESTRINGIR, COMO ESTÁ NO CÓDIGO;
+
+51 - Fugindo um pouco, vamos agora dar um dono para todos os tópicos que já temos criado no banco de dados. Primeiro vamo na aba models.py, que está no app learning_logs, ai criamos logo na classe Topic, uma variável com o nome de owner, onde ela também receberá uma ForeignKey, seguindo a mesma lógica do topic dentro da class Entry, mas aqui colocaremos como parâmetro o método User do django que importamos. Agora vamos abrir o shell no terminal, vamos fazer um código onde ele irá mostrar todos os usuários e todas as suas IDs. Após, vamos usar fazer um makemigrations, escolher a opção 1 e depois armazenar tudo em uma só ID, assim será possível uma pessoa ter feito todos os tópicos;
+    - O código utilizado no shell: 
+        from django.contrib.auth.models import User
+        User.objects.all()
+        for user in User.objects.all():
+            print(user.username, user.id)
+
+52 - Agora estamos fazendo uma proteção das informações que os usuários adicionam ao site. Para isso, importamos o HTTP404, que irá aparecer caso alguma pessoa tente acessar as informações de outro usuário, seja seus tópicos, suas anotações, a página de editar anotações. Para implementar isso, criamos um if onde ele irá verificar se o dono do tópico é diferente da pessoa que está tendo requisitar pela url essa página;
+
+
+
 
 
 
